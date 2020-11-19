@@ -133,9 +133,9 @@ func newTemplateCmd(cfg *action.Configuration, out io.Writer) *cobra.Command {
 							// well as macOS/linux
 							manifestPath := strings.Join(manifestPathSplit, "/")
 
-							// if the filepath provided matches a manifest path in the
+							// if the string provided exists in a manifest path in the
 							// chart, render that manifest
-							if matched, _ := filepath.Match(f, manifestPath); !matched {
+							if matched := strings.Contains(manifestPath, f); !matched {
 								continue
 							}
 							manifestsToRender = append(manifestsToRender, manifest)
@@ -159,7 +159,7 @@ func newTemplateCmd(cfg *action.Configuration, out io.Writer) *cobra.Command {
 
 	f := cmd.Flags()
 	addInstallFlags(cmd, f, client, valueOpts)
-	f.StringArrayVarP(&showFiles, "show-only", "s", []string{}, "only show manifests rendered from the given templates")
+	f.StringArrayVarP(&showFiles, "show-only", "s", []string{}, "only show manifests rendered from the given templates that contain the provided string\n(-s deployment.yaml will match /templates/deployment.yaml and /templates.deployment2.yaml)")
 	f.StringVar(&client.OutputDir, "output-dir", "", "writes the executed templates to files in output-dir instead of stdout")
 	f.BoolVar(&validate, "validate", false, "validate your manifests against the Kubernetes cluster you are currently pointing at. This is the same validation performed on an install")
 	f.BoolVar(&includeCrds, "include-crds", false, "include CRDs in the templated output")
